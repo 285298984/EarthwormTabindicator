@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.sina.licaishi.commonuilib.indicator.IPagerNavigator;
@@ -92,7 +93,7 @@ public class MyCommonNavigator extends FrameLayout implements IPagerNavigator, O
         this.removeAllViews();
         View root;
         if (this.mAdjustMode) {
-            root = LayoutInflater.from(this.getContext()).inflate(R.layout.lcs_indicator_pager_navigator_layout_no_scroll, this);
+            root = LayoutInflater.from(this.getContext()).inflate(R.layout.my_lcs_indicator_pager_navigator_layout_no_scroll, this);
         } else {
             root = LayoutInflater.from(this.getContext()).inflate(R.layout.lcs_indicator_pager_navigator_layout, this);
         }
@@ -120,6 +121,7 @@ public class MyCommonNavigator extends FrameLayout implements IPagerNavigator, O
                 if (this.mAdjustMode) {
                     lp = new LayoutParams(0, -1);
                     //todo 这里强转有个问题～梁超杰
+                    //我们见到的指示器一般都是线性的
                     llp = new LinearLayout.LayoutParams(0, -1);
                     llp.weight = this.adapter.getTitleWeight(this.getContext(), i);
                     this.mTitleContainer.addView(view, llp);
