@@ -22,10 +22,8 @@ allprojects {
         jcenter()
 
         //理财师maven仓库(外网ip 1.119.145.66)
-        maven { url 'http://192.168.48.225/:8081/repository/lcs_snapshot/'}
-        maven { url 'http://192.168.48.225:8081/repository/lcs_releases/'}
-        maven { url 'http://192.168.48.225:8081/repository/lcs_snapshot_new/'}
-        maven { url 'http://192.168.48.225:8081/repository/lcs_release_new/'}
+        maven { url 'http://1.119.145.66:8081/repository/lcs_snapshot_new/'}
+        maven { url 'http://1.119.145.66:8081/repository/lcs_release_new/'}
     }
 }
 

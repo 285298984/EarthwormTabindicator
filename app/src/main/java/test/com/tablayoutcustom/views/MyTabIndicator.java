@@ -14,17 +14,18 @@ import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.sina.licaishi.commonuilib.indicator.IPagerNavigator;
 import com.sina.licaishi.commonuilib.indicator.IndicatorUtils;
 import com.sina.licaishi.commonuilib.indicator.callback.OnGetIndicatorViewAdapter;
+import com.sina.licaishi.commonuilib.indicator.impl.CommonNavigator;
 import com.sina.licaishi.commonuilib.indicator.impl.CommonNavigatorAdapter;
 import com.sina.licaishi.commonuilib.indicator.impl.IPagerIndicator;
 import com.sina.licaishi.commonuilib.indicator.impl.IPagerTitleView;
 import com.sina.licaishi.commonuilib.indicator.impl.indicators.LinePagerIndicator;
-import com.sina.licaishi.commonuilib.indicator.impl.titles.ColorFlipPagerTitleView;
-import com.sina.licaishi.commonuilib.indicator.impl.titles.SimplePagerTitleView;
 
+import test.com.tablayoutcustom.MyAdapter;
 import test.com.tablayoutcustom.R;
 
 /**
@@ -39,9 +40,12 @@ public class MyTabIndicator extends FrameLayout {
     private int mIndicatorColor;
     private boolean adjustMode;
     private DataSetObserver dataSetObserver;
-    private PagerAdapter pagerAdapter;
+    private MyAdapter pagerAdapter;
     private OnGetIndicatorViewAdapter getIndicatorViewAdapter;
-
+    private int currentIndex;
+    private static int ARROW_UP = 0; //箭头朝上
+    private static int ARROW_DOWN = 1;
+    private int arrow_direction = 1;//默认箭头是朝下的
     public MyTabIndicator(@NonNull Context context) {
         this(context, (AttributeSet)null);
     }
@@ -72,6 +76,7 @@ public class MyTabIndicator extends FrameLayout {
     public void onPageSelected(int position) {
         if (this.navigator != null) {
             this.navigator.onPageSelected(position);
+            currentIndex = position;
         }
 
     }
@@ -105,7 +110,7 @@ public class MyTabIndicator extends FrameLayout {
     }
 
     public void setupWithViewPager(ViewPager viewPager) {
-        this.pagerAdapter = viewPager.getAdapter();
+        this.pagerAdapter = (MyAdapter) viewPager.getAdapter();
         if (this.pagerAdapter == null) {
             throw new NullPointerException("PagerAdapter is null");
         } else {
@@ -125,7 +130,7 @@ public class MyTabIndicator extends FrameLayout {
     }
 
     private IPagerNavigator getDefaultNavigator(final ViewPager viewPager) {
-        MyCommonNavigator commonNavigator = new MyCommonNavigator(this.getContext());
+        CommonNavigator commonNavigator = new CommonNavigator(this.getContext());
         commonNavigator.setSkimOver(true);
         if (this.adjustMode && this.pagerAdapter.getCount() < 6) {
             commonNavigator.setAdjustMode(true);
@@ -148,7 +153,7 @@ public class MyTabIndicator extends FrameLayout {
                     }
                 }
 
-                SimplePagerTitleView simplePagerTitleView = new ColorFlipPagerTitleView(context);
+                /*SimplePagerTitleView simplePagerTitleView = new ColorFlipPagerTitleView(context);
                 simplePagerTitleView.setText(MyTabIndicator.this.pagerAdapter.getPageTitle(index).toString());
                 simplePagerTitleView.setTextSize((float)MyTabIndicator.this.mTextSize);
                 simplePagerTitleView.setMinWidth(IndicatorUtils.dp2px(context, 70.0D));
@@ -157,6 +162,37 @@ public class MyTabIndicator extends FrameLayout {
                 simplePagerTitleView.setOnClickListener(new OnClickListener() {
                     public void onClick(View v) {
                         viewPager.setCurrentItem(index);
+                    }
+                });*/
+
+                final MyCustomView simplePagerTitleView = new MyCustomView(context);
+                simplePagerTitleView.setText(MyTabIndicator.this.pagerAdapter.getPageTitle(index).toString());
+                simplePagerTitleView.setShowArrow(MyTabIndicator.this.pagerAdapter.isShowArrow(index));
+                simplePagerTitleView.setTextSize((float)MyTabIndicator.this.mTextSize);
+                simplePagerTitleView.setmNormalColor(MyTabIndicator.this.mTextColor);
+                simplePagerTitleView.setmSelectedColor(MyTabIndicator.this.mSelectTextColor);
+                simplePagerTitleView.setOnClickListener(new OnClickListener() {
+                    public void onClick(View v) {
+                        if(currentIndex!=index){//旧的item转到新的item
+                            viewPager.setCurrentItem(index);
+                            arrow_direction = ARROW_DOWN;
+                            currentIndex = index;
+                            if(simplePagerTitleView.isShowArrow()){
+                                simplePagerTitleView.setArrowDirection(arrow_direction);
+                            }
+                        }else {//重复点击此item
+
+                            if(!simplePagerTitleView.isShowArrow()) return;//如果此item不包括箭头就不用判断后面的操作了
+
+                            if(arrow_direction==ARROW_DOWN){
+                                simplePagerTitleView.setArrowDirection(arrow_direction);
+                                arrow_direction = ARROW_UP;
+                            }else {
+                                simplePagerTitleView.setArrowDirection(arrow_direction);
+                                arrow_direction=ARROW_DOWN;
+                            }
+
+                        }
                     }
                 });
                 return simplePagerTitleView;
