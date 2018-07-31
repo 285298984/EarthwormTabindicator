@@ -49,6 +49,17 @@ public class LcsPageTabIndicator extends FrameLayout {
     private static int ARROW_DOWN = 1;
     private int arrow_direction = 1;//默认箭头是朝下的
 
+
+
+    private OnChildTabSelectedListener onChildTabSelectedListener;
+    public interface OnChildTabSelectedListener{
+        void onSelected(String type);
+    }
+
+    public void setOnChildTabSelectedListener(OnChildTabSelectedListener onChildTabSelectedListener) {
+        this.onChildTabSelectedListener = onChildTabSelectedListener;
+    }
+
     //view
     private TextView tv_man;
     private TextView tv_woman;
@@ -200,7 +211,7 @@ public class LcsPageTabIndicator extends FrameLayout {
                     }
                 });*/
 
-                final MyCustomView simplePagerTitleView = new MyCustomView(context);
+                final LcsCustomTabView simplePagerTitleView = new LcsCustomTabView(context);
                 simplePagerTitleView.setText(LcsPageTabIndicator.this.pagerAdapter.getPageTitle(index).toString());
                 simplePagerTitleView.setShowArrow(LcsPageTabIndicator.this.pagerAdapter.isShowArrow(index));
                 simplePagerTitleView.setTextSize((float) LcsPageTabIndicator.this.mTextSize);
@@ -221,7 +232,7 @@ public class LcsPageTabIndicator extends FrameLayout {
                             if(!simplePagerTitleView.isShowArrow()) return;//如果此item不包括箭头就不用判断后面的操作了
 
                             if(arrow_direction==ARROW_DOWN){
-                                showPopwindow(simplePagerTitleView);
+                                showPopwindow(simplePagerTitleView,index);
                                 arrow_direction = ARROW_UP;
                                 simplePagerTitleView.setArrowDirection(arrow_direction);
                             }else {
@@ -245,7 +256,7 @@ public class LcsPageTabIndicator extends FrameLayout {
 
 
 
-    public void showPopwindow(MyCustomView view){
+    public void showPopwindow(LcsCustomTabView view, int index){
         if(getContext()==null) return;
 
         View contentView = LayoutInflater.from(getContext()).inflate(R.layout.pop_item, null, false);
@@ -257,7 +268,7 @@ public class LcsPageTabIndicator extends FrameLayout {
         window.showAsDropDown(view, 0, 0);
     }
 
-    private void initView(View contentView, final MyCustomView titleView) {
+    private void initView(View contentView, final LcsCustomTabView titleView) {
         if(contentView==null||titleView==null) return;
 
         tv_man = contentView.findViewById(R.id.tv_man);
@@ -273,6 +284,10 @@ public class LcsPageTabIndicator extends FrameLayout {
                 if(titleView.isShowArrow()){
                     titleView.setArrowDirection(arrow_direction);
                 }
+
+                if(onChildTabSelectedListener!=null){
+                    onChildTabSelectedListener.onSelected("男性");
+                }
             }
         });
         tv_woman.setOnClickListener(new OnClickListener() {
@@ -285,6 +300,10 @@ public class LcsPageTabIndicator extends FrameLayout {
                 arrow_direction = ARROW_DOWN;
                 if(titleView.isShowArrow()){
                     titleView.setArrowDirection(arrow_direction);
+                }
+
+                if(onChildTabSelectedListener!=null){
+                    onChildTabSelectedListener.onSelected("女性");
                 }
             }
         });

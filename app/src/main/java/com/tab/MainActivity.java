@@ -19,6 +19,11 @@ public class MainActivity extends AppCompatActivity {
     private List<Fragment> fragmentList;
     private List<String> tab_list;
     private MyAdapter adapter;
+    private BlankFragment fragment1;
+    private BlankFragment fragment2;
+    private BlankFragment fragment3;
+    private BlankFragment fragment4;
+    private BlankFragment fragment5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,17 +37,29 @@ public class MainActivity extends AppCompatActivity {
 
         adapter = new MyAdapter(getSupportFragmentManager(),fragmentList,tab_list);
         viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(fragmentList.size()-1);
+        tabIndicator.setOnChildTabSelectedListener(new LcsPageTabIndicator.OnChildTabSelectedListener() {
+            @Override
+            public void onSelected(String type) {
+                fragment1.reloadData(type);
+            }
+        });
         tabIndicator.setupWithViewPager(viewPager);
 
     }
 
     private void initData() {
         fragmentList = new ArrayList<>();
-        fragmentList.add(new BlankFragment());
-        fragmentList.add(new BlankFragment());
-        fragmentList.add(new BlankFragment());
-        fragmentList.add(new BlankFragment());
-        fragmentList.add(new BlankFragment());
+        fragment1 = new BlankFragment();
+        fragment2 = new BlankFragment();
+        fragment3 = new BlankFragment();
+        fragment4 = new BlankFragment();
+        fragment5 = new BlankFragment();
+        fragmentList.add(fragment1);
+        fragmentList.add(fragment2);
+        fragmentList.add(fragment3);
+        fragmentList.add(fragment4);
+        fragmentList.add(fragment5);
 
 
         tab_list = new ArrayList<>();

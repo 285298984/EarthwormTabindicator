@@ -1,15 +1,12 @@
 package com.tab.views;
 
 import android.content.Context;
-import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.inidicator.impl.IMeasureablePagerTitleView;
 import com.tab.R;
@@ -18,7 +15,7 @@ import com.tab.R;
 /**
  * 自定义一组合布局，包括一个TextView和ImageView
  */
-public class MyCustomView extends ViewGroup implements IMeasureablePagerTitleView {
+public class LcsCustomTabView extends ViewGroup implements IMeasureablePagerTitleView {
     private ImageView mImageView;
     private TextView mTextView;
     private Context context;
@@ -31,15 +28,15 @@ public class MyCustomView extends ViewGroup implements IMeasureablePagerTitleVie
     }
 
     private boolean showArrow;//显示箭头吗?
-    public MyCustomView(Context context) {
+    public LcsCustomTabView(Context context) {
         this(context,null);
     }
 
-    public MyCustomView(Context context, AttributeSet attrs) {
+    public LcsCustomTabView(Context context, AttributeSet attrs) {
         this(context,attrs,0);
     }
 
-    public MyCustomView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public LcsCustomTabView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.context = context;
         View view= LayoutInflater.from(context).inflate(R.layout.tab_item, this);
