@@ -17,7 +17,7 @@
         android:layout_toRightOf="@+id/tv_title"
         android:layout_centerVertical="true"
         android:layout_marginLeft="5dp"
-        android:src="@mipmap/ic_launcher"
+        android:src="@mipmap/arrow_down"
         android:layout_width="10dp"
         android:layout_height="10dp" />
 </RelativeLayout>

@@ -17,16 +17,15 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.sina.licaishi.commonuilib.indicator.IPagerNavigator;
-import com.sina.licaishi.commonuilib.indicator.IndicatorUtils;
-import com.sina.licaishi.commonuilib.indicator.callback.OnGetIndicatorViewAdapter;
-import com.sina.licaishi.commonuilib.indicator.impl.CommonNavigator;
-import com.sina.licaishi.commonuilib.indicator.impl.CommonNavigatorAdapter;
-import com.sina.licaishi.commonuilib.indicator.impl.IPagerIndicator;
-import com.sina.licaishi.commonuilib.indicator.impl.IPagerTitleView;
-import com.sina.licaishi.commonuilib.indicator.impl.indicators.LinePagerIndicator;
+import com.inidicator.IPagerNavigator;
+import com.inidicator.IndicatorUtils;
+import com.inidicator.callback.OnGetIndicatorViewAdapter;
+import com.inidicator.impl.CommonNavigator;
+import com.inidicator.impl.CommonNavigatorAdapter;
+import com.inidicator.impl.IPagerIndicator;
+import com.inidicator.impl.IPagerTitleView;
+import com.inidicator.impl.indicators.LinePagerIndicator;
 import com.tab.MyAdapter;
 import com.tab.R;
 
@@ -211,7 +210,6 @@ public class LcsPageTabIndicator extends FrameLayout {
                     public void onClick(View v) {
                         if(currentIndex!=index){//旧的item转到新的item
 
-                            Toast.makeText(getContext(),"new index",Toast.LENGTH_SHORT).show();
                             viewPager.setCurrentItem(index);
                             arrow_direction = ARROW_DOWN;
                             currentIndex = index;
@@ -224,11 +222,14 @@ public class LcsPageTabIndicator extends FrameLayout {
 
                             if(arrow_direction==ARROW_DOWN){
                                 showPopwindow(simplePagerTitleView);
-                                simplePagerTitleView.setArrowDirection(arrow_direction);
                                 arrow_direction = ARROW_UP;
-                            }else {
                                 simplePagerTitleView.setArrowDirection(arrow_direction);
+                            }else {
                                 arrow_direction=ARROW_DOWN;
+                                simplePagerTitleView.setArrowDirection(arrow_direction);
+                                if(window!=null&&window.isShowing()){
+                                    window.dismiss();
+                                }
                             }
 
                         }
@@ -251,9 +252,9 @@ public class LcsPageTabIndicator extends FrameLayout {
         window = new PopupWindow(contentView, view.getWidth(), 150, true);
         window.setOutsideTouchable(true);
         window.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        window.setFocusable(false);//要在显示之前设置，为了防止和点击其他tab冲突，所以选择不获取焦点
         initView(contentView,view);
         window.showAsDropDown(view, 0, 0);
-        window.setFocusable(false);
     }
 
     private void initView(View contentView, final MyCustomView titleView) {
@@ -285,12 +286,6 @@ public class LcsPageTabIndicator extends FrameLayout {
                 if(titleView.isShowArrow()){
                     titleView.setArrowDirection(arrow_direction);
                 }
-            }
-        });
-        window.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-
             }
         });
 

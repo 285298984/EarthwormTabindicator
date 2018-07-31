@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TabIndicator"><attr format="color" name="tab_textColor"/><attr format="color" name="tab_selectTextColor"/><attr format="dimension" name="tab_textSize"/><attr format="dimension" name="tab_indicatorHeight"/><attr format="color" name="tab_indicatorColor"/><attr format="boolean" name="tab_adjustMode"/></declare-styleable>
+    <string name="app_name">lcs_indicator</string>
+</resources>

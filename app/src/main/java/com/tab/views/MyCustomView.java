@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sina.licaishi.commonuilib.indicator.impl.IMeasureablePagerTitleView;
+import com.inidicator.impl.IMeasureablePagerTitleView;
 import com.tab.R;
 
 
@@ -124,13 +124,14 @@ public class MyCustomView extends ViewGroup implements IMeasureablePagerTitleVie
     }
 
     public void  setArrowDirection(int direction){
-        if(mImageView==null) return;
+        if(mImageView==null||context==null) return;
 
         if(direction==0){
             //todo  设置方向朝上
-
+            mImageView.setImageDrawable(context.getResources().getDrawable(R.mipmap.arrow_up));
         }else {
             //todo  设置方向朝下
+            mImageView.setImageDrawable(context.getResources().getDrawable(R.mipmap.arrow_down));
         }
 
     }
