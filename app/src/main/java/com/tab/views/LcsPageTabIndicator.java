@@ -45,25 +45,32 @@ public class LcsPageTabIndicator extends FrameLayout {
     private LcsCustomAdapter pagerAdapter;
     private OnGetIndicatorViewAdapter getIndicatorViewAdapter;
     private int currentIndex;
-    private static int ARROW_UP = 0; //箭头朝上
-    private static int ARROW_DOWN = 1;
+    public static int ARROW_UP = 0; //箭头朝上
+    public static int ARROW_DOWN = 1;
+
+    public int getArrow_direction() {
+        return arrow_direction;
+    }
+
     private int arrow_direction = 1;//默认箭头是朝下的
 
 
 
+    public void setArrow_direction(int arrow_direction) {
+        this.arrow_direction = arrow_direction;
+    }
+
     private OnChildTabSelectedListener onChildTabSelectedListener;
     public interface OnChildTabSelectedListener{
-        void onSelected(String type);
+        void showPopwindow(LcsCustomTabView view,int index);
+        void dismissPopWindow();
     }
 
     public void setOnChildTabSelectedListener(OnChildTabSelectedListener onChildTabSelectedListener) {
         this.onChildTabSelectedListener = onChildTabSelectedListener;
     }
 
-    //view
-    private TextView tv_man;
-    private TextView tv_woman;
-    private PopupWindow window;
+
     public LcsPageTabIndicator(@NonNull Context context) {
         this(context, (AttributeSet)null);
     }
@@ -232,15 +239,16 @@ public class LcsPageTabIndicator extends FrameLayout {
                             if(!simplePagerTitleView.isShowArrow()) return;//如果此item不包括箭头就不用判断后面的操作了
 
                             if(arrow_direction==ARROW_DOWN){
-                                showPopwindow(simplePagerTitleView,index);
-                                arrow_direction = ARROW_UP;
-                                simplePagerTitleView.setArrowDirection(arrow_direction);
+                                if(onChildTabSelectedListener!=null){
+                                    onChildTabSelectedListener.showPopwindow(simplePagerTitleView,index);
+                                }
                             }else {
+                                if(onChildTabSelectedListener!=null){
+                                    onChildTabSelectedListener.dismissPopWindow();
+                                }
                                 arrow_direction=ARROW_DOWN;
                                 simplePagerTitleView.setArrowDirection(arrow_direction);
-                                if(window!=null&&window.isShowing()){
-                                    window.dismiss();
-                                }
+
                             }
 
                         }
@@ -254,59 +262,4 @@ public class LcsPageTabIndicator extends FrameLayout {
         return commonNavigator;
     }
 
-
-
-    public void showPopwindow(LcsCustomTabView view, int index){
-        if(getContext()==null) return;
-
-        View contentView = LayoutInflater.from(getContext()).inflate(R.layout.pop_item, null, false);
-        window = new PopupWindow(contentView, view.getWidth(), 150, true);
-        window.setOutsideTouchable(true);
-        window.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-        window.setFocusable(false);//要在显示之前设置，为了防止和点击其他tab冲突，所以选择不获取焦点
-        initView(contentView,view);
-        window.showAsDropDown(view, 0, 0);
-    }
-
-    private void initView(View contentView, final LcsCustomTabView titleView) {
-        if(contentView==null||titleView==null) return;
-
-        tv_man = contentView.findViewById(R.id.tv_man);
-        tv_woman = contentView.findViewById(R.id.tv_woman);
-        tv_man.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(window!=null&&window.isShowing()){
-                    window.dismiss();
-                }
-                titleView.setText("男性");
-                arrow_direction = ARROW_DOWN;
-                if(titleView.isShowArrow()){
-                    titleView.setArrowDirection(arrow_direction);
-                }
-
-                if(onChildTabSelectedListener!=null){
-                    onChildTabSelectedListener.onSelected("男性");
-                }
-            }
-        });
-        tv_woman.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(window!=null&&window.isShowing()){
-                    window.dismiss();
-                }
-                titleView.setText("女性");
-                arrow_direction = ARROW_DOWN;
-                if(titleView.isShowArrow()){
-                    titleView.setArrowDirection(arrow_direction);
-                }
-
-                if(onChildTabSelectedListener!=null){
-                    onChildTabSelectedListener.onSelected("女性");
-                }
-            }
-        });
-
-    }
 }

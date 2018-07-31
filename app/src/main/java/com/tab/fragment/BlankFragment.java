@@ -31,6 +31,8 @@ public class BlankFragment extends LazyFragment {
 
 
     public void reloadData(String type) {
-        textView.setText(type);
+        if(textView!=null){
+            textView.setText(type);
+        }
     }
 }
