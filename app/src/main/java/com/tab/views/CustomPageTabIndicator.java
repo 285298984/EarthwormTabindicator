@@ -4,19 +4,15 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 
 import com.inidicator.IPagerNavigator;
 import com.inidicator.IndicatorUtils;
@@ -26,14 +22,14 @@ import com.inidicator.impl.CommonNavigatorAdapter;
 import com.inidicator.impl.IPagerIndicator;
 import com.inidicator.impl.IPagerTitleView;
 import com.inidicator.impl.indicators.LinePagerIndicator;
-import com.tab.adapter.LcsCustomAdapter;
+import com.tab.adapter.CustomPagerAdapter;
 import com.tab.R;
 
 
 /**
  * 理财师3.0主页蚯蚓效果的指示器
  */
-public class LcsPageTabIndicator extends FrameLayout {
+public class CustomPageTabIndicator extends FrameLayout {
     private IPagerNavigator navigator;
     private int mTextColor;
     private int mSelectTextColor;
@@ -42,7 +38,7 @@ public class LcsPageTabIndicator extends FrameLayout {
     private int mIndicatorColor;
     private boolean adjustMode;
     private DataSetObserver dataSetObserver;
-    private LcsCustomAdapter pagerAdapter;
+    private CustomPagerAdapter pagerAdapter;
     private OnGetIndicatorViewAdapter getIndicatorViewAdapter;
     private int currentIndex;
     public static int ARROW_UP = 0; //箭头朝上
@@ -62,7 +58,7 @@ public class LcsPageTabIndicator extends FrameLayout {
 
     private OnChildTabSelectedListener onChildTabSelectedListener;
     public interface OnChildTabSelectedListener{
-        void showPopwindow(LcsCustomTabView view,int index);
+        void showPopwindow(CustomTabView view, int index);
         void dismissPopWindow();
     }
 
@@ -71,15 +67,15 @@ public class LcsPageTabIndicator extends FrameLayout {
     }
 
 
-    public LcsPageTabIndicator(@NonNull Context context) {
+    public CustomPageTabIndicator(@NonNull Context context) {
         this(context, (AttributeSet)null);
     }
 
-    public LcsPageTabIndicator(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public CustomPageTabIndicator(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public LcsPageTabIndicator(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
+    public CustomPageTabIndicator(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TabIndicator, defStyleAttr, 0);
         this.mTextColor = a.getColor(R.styleable.TabIndicator_tab_textColor, Color.parseColor("#515151"));
@@ -135,7 +131,7 @@ public class LcsPageTabIndicator extends FrameLayout {
     }
 
     public void setupWithViewPager(ViewPager viewPager) {
-        this.pagerAdapter = (LcsCustomAdapter) viewPager.getAdapter();
+        this.pagerAdapter = (CustomPagerAdapter) viewPager.getAdapter();
         if (this.pagerAdapter == null) {
             throw new NullPointerException("PagerAdapter is null");
         } else {
@@ -173,20 +169,20 @@ public class LcsPageTabIndicator extends FrameLayout {
         commonNavigator.setScrollPivotX(0.65F);
         commonNavigator.setAdapter(new CommonNavigatorAdapter() {
             public int getCount() {
-                return LcsPageTabIndicator.this.pagerAdapter.getCount();
+                return CustomPageTabIndicator.this.pagerAdapter.getCount();
             }
 
             public IPagerIndicator getIndicator(Context context) {
-                if (LcsPageTabIndicator.this.getIndicatorViewAdapter != null) {
-                    IPagerIndicator iPagerIndicator = LcsPageTabIndicator.this.getIndicatorViewAdapter.getIndicator(context);
+                if (CustomPageTabIndicator.this.getIndicatorViewAdapter != null) {
+                    IPagerIndicator iPagerIndicator = CustomPageTabIndicator.this.getIndicatorViewAdapter.getIndicator(context);
                     if (iPagerIndicator != null) {
                         return iPagerIndicator;
                     }
                 }
 
                 LinePagerIndicator indicator = new LinePagerIndicator(context);
-                indicator.setColors(new Integer[]{LcsPageTabIndicator.this.mIndicatorColor});
-                indicator.setLineHeight((float) LcsPageTabIndicator.this.mIndicatorHeight);
+                indicator.setColors(new Integer[]{CustomPageTabIndicator.this.mIndicatorColor});
+                indicator.setLineHeight((float) CustomPageTabIndicator.this.mIndicatorHeight);
                 indicator.setMode(2);
                 indicator.setYOffset((float)IndicatorUtils.dp2px(context, 5.0D));
                 indicator.setLineWidth((float)IndicatorUtils.dp2px(context, 25.0D));
@@ -198,10 +194,10 @@ public class LcsPageTabIndicator extends FrameLayout {
 
 
             public IPagerTitleView getTitleView(Context context, final int index) {
-                if (LcsPageTabIndicator.this.getIndicatorViewAdapter != null) {
-                    IPagerTitleView titleView = LcsPageTabIndicator.this.getIndicatorViewAdapter.getTitleView(context, index);
+                if (CustomPageTabIndicator.this.getIndicatorViewAdapter != null) {
+                    IPagerTitleView titleView = CustomPageTabIndicator.this.getIndicatorViewAdapter.getTitleView(context, index);
                     if (titleView != null) {
-                        titleView.setText(LcsPageTabIndicator.this.pagerAdapter.getPageTitle(index).toString());
+                        titleView.setText(CustomPageTabIndicator.this.pagerAdapter.getPageTitle(index).toString());
                         return titleView;
                     }
                 }
@@ -218,12 +214,12 @@ public class LcsPageTabIndicator extends FrameLayout {
                     }
                 });*/
 
-                final LcsCustomTabView simplePagerTitleView = new LcsCustomTabView(context);
-                simplePagerTitleView.setText(LcsPageTabIndicator.this.pagerAdapter.getPageTitle(index).toString());
-                simplePagerTitleView.setShowArrow(LcsPageTabIndicator.this.pagerAdapter.isShowArrow(index));
-                simplePagerTitleView.setTextSize((float) LcsPageTabIndicator.this.mTextSize);
-                simplePagerTitleView.setmNormalColor(LcsPageTabIndicator.this.mTextColor);
-                simplePagerTitleView.setmSelectedColor(LcsPageTabIndicator.this.mSelectTextColor);
+                final CustomTabView simplePagerTitleView = new CustomTabView(context);
+                simplePagerTitleView.setText(CustomPageTabIndicator.this.pagerAdapter.getPageTitle(index).toString());
+                simplePagerTitleView.setShowArrow(CustomPageTabIndicator.this.pagerAdapter.isShowArrow(index));
+                simplePagerTitleView.setTextSize((float) CustomPageTabIndicator.this.mTextSize);
+                simplePagerTitleView.setmNormalColor(CustomPageTabIndicator.this.mTextColor);
+                simplePagerTitleView.setmSelectedColor(CustomPageTabIndicator.this.mSelectTextColor);
                 simplePagerTitleView.setOnClickListener(new OnClickListener() {
                     public void onClick(View v) {
                         if(currentIndex!=index){//旧的item转到新的item

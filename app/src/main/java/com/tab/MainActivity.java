@@ -13,29 +13,28 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 
-import com.tab.adapter.LcsCustomAdapter;
+import com.tab.adapter.CustomPagerAdapter;
 import com.tab.fragment.BlankFragment;
 import com.tab.fragment.VideoFragment;
-import com.tab.views.LcsCustomTabView;
-import com.tab.views.LcsPageTabIndicator;
+import com.tab.views.CustomTabView;
+import com.tab.views.CustomPageTabIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
 
-import static com.tab.views.LcsPageTabIndicator.ARROW_DOWN;
-import static com.tab.views.LcsPageTabIndicator.ARROW_UP;
-import static java.security.AccessController.getContext;
+import static com.tab.views.CustomPageTabIndicator.ARROW_DOWN;
+import static com.tab.views.CustomPageTabIndicator.ARROW_UP;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private LcsPageTabIndicator tabIndicator;
+    private CustomPageTabIndicator tabIndicator;
     private ViewPager viewPager;
     private List<Fragment> fragmentList;
     private List<String> tab_list;
-    private LcsCustomAdapter adapter;
+    private CustomPagerAdapter adapter;
     private BlankFragment fragment1;
     private BlankFragment fragment2;
     private VideoFragment fragment3;
@@ -57,13 +56,13 @@ public class MainActivity extends AppCompatActivity {
 
         initData();
 
-        adapter = new LcsCustomAdapter(getSupportFragmentManager(),fragmentList,tab_list);
+        adapter = new CustomPagerAdapter(getSupportFragmentManager(),fragmentList,tab_list);
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(fragmentList.size()-1);
-        tabIndicator.setOnChildTabSelectedListener(new LcsPageTabIndicator.OnChildTabSelectedListener() {
+        tabIndicator.setOnChildTabSelectedListener(new CustomPageTabIndicator.OnChildTabSelectedListener() {
 
             @Override
-            public void showPopwindow(LcsCustomTabView view, int index) {
+            public void showPopwindow(CustomTabView view, int index) {
 
                 tabIndicator.setArrow_direction(ARROW_UP);
                 view.setArrowDirection(tabIndicator.getArrow_direction());
@@ -128,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void initView(View contentView, final LcsCustomTabView titleView,int index) {
+    private void initView(View contentView, final CustomTabView titleView, int index) {
         if(contentView==null||titleView==null) return;
 
         tv_man = contentView.findViewById(R.id.tv_man);

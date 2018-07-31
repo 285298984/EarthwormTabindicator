@@ -15,7 +15,7 @@ import com.tab.R;
 /**
  * 自定义一组合布局，包括一个TextView和ImageView
  */
-public class LcsCustomTabView extends ViewGroup implements IMeasureablePagerTitleView {
+public class CustomTabView extends ViewGroup implements IMeasureablePagerTitleView {
     private ImageView mImageView;
     private TextView mTextView;
     private Context context;
@@ -28,15 +28,15 @@ public class LcsCustomTabView extends ViewGroup implements IMeasureablePagerTitl
     }
 
     private boolean showArrow;//显示箭头吗?
-    public LcsCustomTabView(Context context) {
+    public CustomTabView(Context context) {
         this(context,null);
     }
 
-    public LcsCustomTabView(Context context, AttributeSet attrs) {
+    public CustomTabView(Context context, AttributeSet attrs) {
         this(context,attrs,0);
     }
 
-    public LcsCustomTabView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CustomTabView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.context = context;
         View view= LayoutInflater.from(context).inflate(R.layout.tab_item, this);

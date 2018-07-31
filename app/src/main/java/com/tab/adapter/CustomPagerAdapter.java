@@ -6,11 +6,11 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import java.util.List;
 
-public class LcsCustomAdapter extends FragmentStatePagerAdapter {
+public class CustomPagerAdapter extends FragmentStatePagerAdapter {
     private List<Fragment> list;
     private List<String> tab_list;
     private boolean showArrow = false;//显示箭头吗?默认不显示
-    public LcsCustomAdapter(FragmentManager fm, List<Fragment> list, List<String> tab_list) {
+    public CustomPagerAdapter(FragmentManager fm, List<Fragment> list, List<String> tab_list) {
         super(fm);
         this.list = list;
         this.tab_list = tab_list;
