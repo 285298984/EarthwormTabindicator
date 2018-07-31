@@ -6,10 +6,15 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
 
+import com.tab.adapter.LcsCustomAdapter;
+import com.tab.fragment.BlankFragment;
+import com.tab.fragment.VideoFragment;
 import com.tab.views.LcsPageTabIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -18,10 +23,10 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private List<Fragment> fragmentList;
     private List<String> tab_list;
-    private MyAdapter adapter;
+    private LcsCustomAdapter adapter;
     private BlankFragment fragment1;
     private BlankFragment fragment2;
-    private BlankFragment fragment3;
+    private VideoFragment fragment3;
     private BlankFragment fragment4;
     private BlankFragment fragment5;
 
@@ -35,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
         initData();
 
-        adapter = new MyAdapter(getSupportFragmentManager(),fragmentList,tab_list);
+        adapter = new LcsCustomAdapter(getSupportFragmentManager(),fragmentList,tab_list);
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(fragmentList.size()-1);
         tabIndicator.setOnChildTabSelectedListener(new LcsPageTabIndicator.OnChildTabSelectedListener() {
@@ -52,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentList = new ArrayList<>();
         fragment1 = new BlankFragment();
         fragment2 = new BlankFragment();
-        fragment3 = new BlankFragment();
+        fragment3 = new VideoFragment();
         fragment4 = new BlankFragment();
         fragment5 = new BlankFragment();
         fragmentList.add(fragment1);
@@ -65,9 +70,24 @@ public class MainActivity extends AppCompatActivity {
         tab_list = new ArrayList<>();
         tab_list.add("全部");
         tab_list.add("创业");
-        tab_list.add("历史");
+        tab_list.add("视频");
         tab_list.add("时尚");
         tab_list.add("生活");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(App.instance.VideoPlaying!=null)
+        {
+            if(App.instance.VideoPlaying.currentState== JCVideoPlayer.CURRENT_STATE_PLAYING)
+            {
+                App.instance.VideoPlaying.startButton.performClick();
+            }else if (App.instance.VideoPlaying.currentState== JCVideoPlayer.CURRENT_STATE_PREPAREING)
+            {
+                JCVideoPlayer.releaseAllVideos();
+            }
+        }
     }
 
 }

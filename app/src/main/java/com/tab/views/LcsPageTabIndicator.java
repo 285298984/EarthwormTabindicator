@@ -26,7 +26,7 @@ import com.inidicator.impl.CommonNavigatorAdapter;
 import com.inidicator.impl.IPagerIndicator;
 import com.inidicator.impl.IPagerTitleView;
 import com.inidicator.impl.indicators.LinePagerIndicator;
-import com.tab.MyAdapter;
+import com.tab.adapter.LcsCustomAdapter;
 import com.tab.R;
 
 
@@ -42,7 +42,7 @@ public class LcsPageTabIndicator extends FrameLayout {
     private int mIndicatorColor;
     private boolean adjustMode;
     private DataSetObserver dataSetObserver;
-    private MyAdapter pagerAdapter;
+    private LcsCustomAdapter pagerAdapter;
     private OnGetIndicatorViewAdapter getIndicatorViewAdapter;
     private int currentIndex;
     private static int ARROW_UP = 0; //箭头朝上
@@ -128,7 +128,7 @@ public class LcsPageTabIndicator extends FrameLayout {
     }
 
     public void setupWithViewPager(ViewPager viewPager) {
-        this.pagerAdapter = (MyAdapter) viewPager.getAdapter();
+        this.pagerAdapter = (LcsCustomAdapter) viewPager.getAdapter();
         if (this.pagerAdapter == null) {
             throw new NullPointerException("PagerAdapter is null");
         } else {

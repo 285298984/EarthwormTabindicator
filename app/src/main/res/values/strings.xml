@@ -4,5 +4,12 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-    <declare-styleable name="TabIndicator"><attr format="color" name="tab_textColor"/><attr format="color" name="tab_selectTextColor"/><attr format="dimension" name="tab_textSize"/><attr format="dimension" name="tab_indicatorHeight"/><attr format="color" name="tab_indicatorColor"/><attr format="boolean" name="tab_adjustMode"/></declare-styleable>
+    <declare-styleable name="TabIndicator">
+        <attr name="tab_textColor" format="color" />
+        <attr name="tab_selectTextColor" format="color" />
+        <attr name="tab_textSize" format="dimension" />
+        <attr name="tab_indicatorHeight" format="dimension" />
+        <attr name="tab_indicatorColor" format="color" />
+        <attr name="tab_adjustMode" format="boolean" />
+    </declare-styleable>
 </resources>
