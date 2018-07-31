@@ -4,15 +4,20 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sina.licaishi.commonuilib.indicator.IPagerNavigator;
 import com.sina.licaishi.commonuilib.indicator.IndicatorUtils;
@@ -27,9 +32,9 @@ import com.tab.R;
 
 
 /**
- * 蚯蚓效果的指示器
+ * 理财师3.0主页蚯蚓效果的指示器
  */
-public class MyTabIndicator extends FrameLayout {
+public class LcsPageTabIndicator extends FrameLayout {
     private IPagerNavigator navigator;
     private int mTextColor;
     private int mSelectTextColor;
@@ -44,15 +49,20 @@ public class MyTabIndicator extends FrameLayout {
     private static int ARROW_UP = 0; //箭头朝上
     private static int ARROW_DOWN = 1;
     private int arrow_direction = 1;//默认箭头是朝下的
-    public MyTabIndicator(@NonNull Context context) {
+
+    //view
+    private TextView tv_man;
+    private TextView tv_woman;
+    private PopupWindow window;
+    public LcsPageTabIndicator(@NonNull Context context) {
         this(context, (AttributeSet)null);
     }
 
-    public MyTabIndicator(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public LcsPageTabIndicator(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public MyTabIndicator(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
+    public LcsPageTabIndicator(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TabIndicator, defStyleAttr, 0);
         this.mTextColor = a.getColor(R.styleable.TabIndicator_tab_textColor, Color.parseColor("#515151"));
@@ -127,6 +137,13 @@ public class MyTabIndicator extends FrameLayout {
         }
     }
 
+
+    public void setGetIndicatorViewAdapter(OnGetIndicatorViewAdapter getIndicatorViewAdapter) {
+        this.getIndicatorViewAdapter = getIndicatorViewAdapter;
+    }
+
+
+    /********************************在这个方法里面对自定义view进行处理**********************************************/
     private IPagerNavigator getDefaultNavigator(final ViewPager viewPager) {
         CommonNavigator commonNavigator = new CommonNavigator(this.getContext());
         commonNavigator.setSkimOver(true);
@@ -139,14 +156,35 @@ public class MyTabIndicator extends FrameLayout {
         commonNavigator.setScrollPivotX(0.65F);
         commonNavigator.setAdapter(new CommonNavigatorAdapter() {
             public int getCount() {
-                return MyTabIndicator.this.pagerAdapter.getCount();
+                return LcsPageTabIndicator.this.pagerAdapter.getCount();
             }
 
+            public IPagerIndicator getIndicator(Context context) {
+                if (LcsPageTabIndicator.this.getIndicatorViewAdapter != null) {
+                    IPagerIndicator iPagerIndicator = LcsPageTabIndicator.this.getIndicatorViewAdapter.getIndicator(context);
+                    if (iPagerIndicator != null) {
+                        return iPagerIndicator;
+                    }
+                }
+
+                LinePagerIndicator indicator = new LinePagerIndicator(context);
+                indicator.setColors(new Integer[]{LcsPageTabIndicator.this.mIndicatorColor});
+                indicator.setLineHeight((float) LcsPageTabIndicator.this.mIndicatorHeight);
+                indicator.setMode(2);
+                indicator.setYOffset((float)IndicatorUtils.dp2px(context, 5.0D));
+                indicator.setLineWidth((float)IndicatorUtils.dp2px(context, 25.0D));
+                indicator.setRoundRadius((float)IndicatorUtils.dp2px(context, 3.0D));
+                indicator.setStartInterpolator(new AccelerateInterpolator());
+                indicator.setEndInterpolator(new DecelerateInterpolator(2.0F));
+                return indicator;
+            }
+
+
             public IPagerTitleView getTitleView(Context context, final int index) {
-                if (MyTabIndicator.this.getIndicatorViewAdapter != null) {
-                    IPagerTitleView titleView = MyTabIndicator.this.getIndicatorViewAdapter.getTitleView(context, index);
+                if (LcsPageTabIndicator.this.getIndicatorViewAdapter != null) {
+                    IPagerTitleView titleView = LcsPageTabIndicator.this.getIndicatorViewAdapter.getTitleView(context, index);
                     if (titleView != null) {
-                        titleView.setText(MyTabIndicator.this.pagerAdapter.getPageTitle(index).toString());
+                        titleView.setText(LcsPageTabIndicator.this.pagerAdapter.getPageTitle(index).toString());
                         return titleView;
                     }
                 }
@@ -164,14 +202,16 @@ public class MyTabIndicator extends FrameLayout {
                 });*/
 
                 final MyCustomView simplePagerTitleView = new MyCustomView(context);
-                simplePagerTitleView.setText(MyTabIndicator.this.pagerAdapter.getPageTitle(index).toString());
-                simplePagerTitleView.setShowArrow(MyTabIndicator.this.pagerAdapter.isShowArrow(index));
-                simplePagerTitleView.setTextSize((float)MyTabIndicator.this.mTextSize);
-                simplePagerTitleView.setmNormalColor(MyTabIndicator.this.mTextColor);
-                simplePagerTitleView.setmSelectedColor(MyTabIndicator.this.mSelectTextColor);
+                simplePagerTitleView.setText(LcsPageTabIndicator.this.pagerAdapter.getPageTitle(index).toString());
+                simplePagerTitleView.setShowArrow(LcsPageTabIndicator.this.pagerAdapter.isShowArrow(index));
+                simplePagerTitleView.setTextSize((float) LcsPageTabIndicator.this.mTextSize);
+                simplePagerTitleView.setmNormalColor(LcsPageTabIndicator.this.mTextColor);
+                simplePagerTitleView.setmSelectedColor(LcsPageTabIndicator.this.mSelectTextColor);
                 simplePagerTitleView.setOnClickListener(new OnClickListener() {
                     public void onClick(View v) {
                         if(currentIndex!=index){//旧的item转到新的item
+
+                            Toast.makeText(getContext(),"new index",Toast.LENGTH_SHORT).show();
                             viewPager.setCurrentItem(index);
                             arrow_direction = ARROW_DOWN;
                             currentIndex = index;
@@ -183,6 +223,7 @@ public class MyTabIndicator extends FrameLayout {
                             if(!simplePagerTitleView.isShowArrow()) return;//如果此item不包括箭头就不用判断后面的操作了
 
                             if(arrow_direction==ARROW_DOWN){
+                                showPopwindow(simplePagerTitleView);
                                 simplePagerTitleView.setArrowDirection(arrow_direction);
                                 arrow_direction = ARROW_UP;
                             }else {
@@ -196,30 +237,62 @@ public class MyTabIndicator extends FrameLayout {
                 return simplePagerTitleView;
             }
 
-            public IPagerIndicator getIndicator(Context context) {
-                if (MyTabIndicator.this.getIndicatorViewAdapter != null) {
-                    IPagerIndicator iPagerIndicator = MyTabIndicator.this.getIndicatorViewAdapter.getIndicator(context);
-                    if (iPagerIndicator != null) {
-                        return iPagerIndicator;
-                    }
-                }
 
-                LinePagerIndicator indicator = new LinePagerIndicator(context);
-                indicator.setColors(new Integer[]{MyTabIndicator.this.mIndicatorColor});
-                indicator.setLineHeight((float)MyTabIndicator.this.mIndicatorHeight);
-                indicator.setMode(2);
-                indicator.setYOffset((float)IndicatorUtils.dp2px(context, 5.0D));
-                indicator.setLineWidth((float)IndicatorUtils.dp2px(context, 25.0D));
-                indicator.setRoundRadius((float)IndicatorUtils.dp2px(context, 3.0D));
-                indicator.setStartInterpolator(new AccelerateInterpolator());
-                indicator.setEndInterpolator(new DecelerateInterpolator(2.0F));
-                return indicator;
-            }
         });
         return commonNavigator;
     }
 
-    public void setGetIndicatorViewAdapter(OnGetIndicatorViewAdapter getIndicatorViewAdapter) {
-        this.getIndicatorViewAdapter = getIndicatorViewAdapter;
+
+
+    public void showPopwindow(MyCustomView view){
+        if(getContext()==null) return;
+
+        View contentView = LayoutInflater.from(getContext()).inflate(R.layout.pop_item, null, false);
+        window = new PopupWindow(contentView, view.getWidth(), 150, true);
+        window.setOutsideTouchable(true);
+        window.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        initView(contentView,view);
+        window.showAsDropDown(view, 0, 0);
+        window.setFocusable(false);
+    }
+
+    private void initView(View contentView, final MyCustomView titleView) {
+        if(contentView==null||titleView==null) return;
+
+        tv_man = contentView.findViewById(R.id.tv_man);
+        tv_woman = contentView.findViewById(R.id.tv_woman);
+        tv_man.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(window!=null&&window.isShowing()){
+                    window.dismiss();
+                }
+                titleView.setText("男性");
+                arrow_direction = ARROW_DOWN;
+                if(titleView.isShowArrow()){
+                    titleView.setArrowDirection(arrow_direction);
+                }
+            }
+        });
+        tv_woman.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(window!=null&&window.isShowing()){
+                    window.dismiss();
+                }
+                titleView.setText("女性");
+                arrow_direction = ARROW_DOWN;
+                if(titleView.isShowArrow()){
+                    titleView.setArrowDirection(arrow_direction);
+                }
+            }
+        });
+        window.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+
+            }
+        });
+
     }
 }

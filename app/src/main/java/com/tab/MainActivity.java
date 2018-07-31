@@ -6,7 +6,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
 
-import com.tab.views.MyTabIndicator;
+import com.tab.views.LcsPageTabIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private MyTabIndicator tabIndicator;
+    private LcsPageTabIndicator tabIndicator;
     private ViewPager viewPager;
     private List<Fragment> fragmentList;
     private List<String> tab_list;
@@ -46,11 +46,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         tab_list = new ArrayList<>();
-        tab_list.add("科技");
+        tab_list.add("全部");
         tab_list.add("创业");
         tab_list.add("历史");
-        tab_list.add("家庭");
-        tab_list.add("伦理");
+        tab_list.add("时尚");
+        tab_list.add("生活");
     }
 
 }

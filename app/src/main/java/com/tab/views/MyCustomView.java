@@ -128,10 +128,9 @@ public class MyCustomView extends ViewGroup implements IMeasureablePagerTitleVie
 
         if(direction==0){
             //todo  设置方向朝上
-            Toast.makeText(getContext(),"箭头朝上了",Toast.LENGTH_SHORT).show();
+
         }else {
             //todo  设置方向朝下
-            Toast.makeText(getContext(),"箭头朝下了",Toast.LENGTH_SHORT).show();
         }
 
     }

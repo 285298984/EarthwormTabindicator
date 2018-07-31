@@ -6,7 +6,7 @@ public class MyViewPagerHelper {
     public MyViewPagerHelper() {
     }
 
-    public static void bind(final MyTabIndicator tabIndicator, ViewPager pager) {
+    public static void bind(final LcsPageTabIndicator tabIndicator, ViewPager pager) {
         if (tabIndicator != null && pager != null) {
             pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
