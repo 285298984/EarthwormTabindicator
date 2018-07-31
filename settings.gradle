@@ -1,1 +1,1 @@
-include ':app', ':loachindicator'
+include ':app', ':EarthwormIndicator'
