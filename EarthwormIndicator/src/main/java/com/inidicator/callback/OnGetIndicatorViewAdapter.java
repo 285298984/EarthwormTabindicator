@@ -13,4 +13,6 @@ public class OnGetIndicatorViewAdapter {
     public IPagerIndicator getIndicator(Context context){
         return null;
     }
+
+    public void getSelectedIndex(int  index){ }
 }
