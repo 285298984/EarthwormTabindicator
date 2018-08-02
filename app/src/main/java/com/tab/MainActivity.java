@@ -1,43 +1,32 @@
 package com.tab;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 
 
-import com.tab.adapter.LcsCustomAdapter;
+import com.inidicator.TabIndicator;
+import com.tab.adapter.CustomPagerAdapter;
 import com.tab.fragment.BlankFragment;
 import com.tab.fragment.VideoFragment;
-import com.tab.views.BaseTabIndicator;
 import com.tab.views.LcsCustomOnGetIndicatorViewAdapter;
-import com.tab.views.LcsCustomTabView;
-import com.tab.views.LcsPageTabIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
 
-import static com.tab.views.LcsPageTabIndicator.ARROW_DOWN;
-import static com.tab.views.LcsPageTabIndicator.ARROW_UP;
-import static java.security.AccessController.getContext;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private BaseTabIndicator tabIndicator;
+    private TabIndicator tabIndicator;
     private ViewPager viewPager;
     private List<Fragment> fragmentList;
     private List<String> tab_list;
-    private LcsCustomAdapter adapter;
+    private CustomPagerAdapter adapter;
     private BlankFragment fragment1;
     private BlankFragment fragment2;
     private VideoFragment fragment3;
@@ -54,20 +43,19 @@ public class MainActivity extends AppCompatActivity {
 
         initData();
 
-        adapter = new LcsCustomAdapter(getSupportFragmentManager(),fragmentList,tab_list);
+        adapter = new CustomPagerAdapter(getSupportFragmentManager(),fragmentList,tab_list);
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(fragmentList.size()-1);
         tabIndicator.setGetIndicatorViewAdapter(new LcsCustomOnGetIndicatorViewAdapter() {
             @Override
-            public BaseTabIndicator getTabIndicator() {
+            public TabIndicator getTabIndicator() {
                 return tabIndicator;
             }
 
             @Override
-            public void childTabSelected(String type) {
-                fragment1.reloadData(type);
+            public void childTabSelected(int index, String type) {
+                  fragment1.reloadData(type);
             }
-
         });
         tabIndicator.setupWithViewPager(viewPager);
 

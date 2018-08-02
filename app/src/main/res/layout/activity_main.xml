@@ -6,12 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-    <com.tab.views.BaseTabIndicator
+    <com.inidicator.TabIndicator
         android:id="@+id/tabIndicator"
         android:background="#ffff"
         android:layout_width="match_parent"
         android:layout_height="44dp">
-    </com.tab.views.BaseTabIndicator>
+    </com.inidicator.TabIndicator>
     <View
         android:id="@+id/view_center"
         android:layout_below="@+id/tabIndicator"

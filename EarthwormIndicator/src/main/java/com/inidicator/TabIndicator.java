@@ -38,11 +38,43 @@ public class TabIndicator extends FrameLayout {
     private int mIndicatorHeight;   //tab indicator 高度
     private int mIndicatorColor;    //tab indicator 颜色
     private boolean adjustMode;     // 是否均分显示
-
+    private ViewPager viewPager;
     private DataSetObserver dataSetObserver;
     private PagerAdapter pagerAdapter;
 
     private OnGetIndicatorViewAdapter getIndicatorViewAdapter; //通过这个适配器获取TitleView与IndicatorView
+
+    public ViewPager getViewPager() {
+        return viewPager;
+    }
+
+    public int getmTextColor() {
+        return mTextColor;
+    }
+
+    public int getmSelectTextColor() {
+        return mSelectTextColor;
+    }
+
+    public int getmTextSize() {
+        return mTextSize;
+    }
+
+    public int getmIndicatorHeight() {
+        return mIndicatorHeight;
+    }
+
+    public int getmIndicatorColor() {
+        return mIndicatorColor;
+    }
+
+    public boolean isAdjustMode() {
+        return adjustMode;
+    }
+
+    public PagerAdapter getPagerAdapter() {
+        return pagerAdapter;
+    }
 
     public TabIndicator(@NonNull Context context) {
         this(context,null);
@@ -75,6 +107,9 @@ public class TabIndicator extends FrameLayout {
     public void onPageSelected(int position){
         if(navigator != null){
             navigator.onPageSelected(position);
+            if(getIndicatorViewAdapter!=null){
+                getIndicatorViewAdapter.getSelectedIndex(position);
+            }
         }
     }
 
@@ -131,6 +166,7 @@ public class TabIndicator extends FrameLayout {
 
     //内置一个默认的指示器
     private IPagerNavigator getDefaultNavigator(final ViewPager viewPager){
+        this.viewPager = viewPager;
         CommonNavigator commonNavigator = new CommonNavigator(getContext());
         commonNavigator.setSkimOver(true); //夸多页面切换，中间也是否显示 "掠过"效果
         if (adjustMode && pagerAdapter.getCount()<6){
@@ -150,7 +186,6 @@ public class TabIndicator extends FrameLayout {
                 if(getIndicatorViewAdapter != null){
                     IPagerTitleView titleView = getIndicatorViewAdapter.getTitleView(context,index);
                     if(titleView != null) {
-                        titleView.setText(pagerAdapter.getPageTitle(index).toString());
                         return titleView;
                     }
                 }

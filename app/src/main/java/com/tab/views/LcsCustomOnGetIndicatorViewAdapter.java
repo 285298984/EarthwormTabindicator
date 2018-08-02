@@ -5,37 +5,38 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.inidicator.TabIndicator;
 import com.inidicator.callback.OnGetIndicatorViewAdapter;
 import com.inidicator.impl.IPagerIndicator;
 import com.inidicator.impl.IPagerTitleView;
 import com.tab.R;
-import com.tab.adapter.LcsCustomAdapter;
+
 
 /**
- * 自定义View在此处理
+ * 理财师个人主页用于填充每个tabview
  */
 public abstract class LcsCustomOnGetIndicatorViewAdapter extends OnGetIndicatorViewAdapter {
     //view
-    private TextView tv_man;
-    private TextView tv_woman;
+    private LinearLayout ll;
     private PopupWindow window;
     private Context context;
+
+    //data
     public static int ARROW_UP = 0; //箭头朝上
     public static int ARROW_DOWN = 1;
-
-    private int arrow_direction = 1;//默认箭头是朝下的
     private int currentIndex;
-
-
-
-    private BaseTabIndicator tabIndicator;
-    public  abstract BaseTabIndicator getTabIndicator();
-
-
-    public  abstract void childTabSelected(String type);
+    private boolean clickItem=false;
+    private boolean hasDismiss=false;
+    private TabIndicator tabIndicator;
+    private int outFirstTime = 0;
+    private int outSecondTime = 0;
+    //方法
+    public  abstract TabIndicator getTabIndicator();
+    public  abstract void childTabSelected(int index,String type);
 
     @Override
     public void getSelectedIndex(int index) {
@@ -49,39 +50,55 @@ public abstract class LcsCustomOnGetIndicatorViewAdapter extends OnGetIndicatorV
 
         this.context = context;
         tabIndicator = getTabIndicator();
-        final LcsCustomTabView simplePagerTitleView = new LcsCustomTabView(context);
+        final LcsPageTabView simplePagerTitleView = new LcsPageTabView(context);
         simplePagerTitleView.setText(tabIndicator.getPagerAdapter().getPageTitle(index).toString());
-        simplePagerTitleView.setShowArrow(((LcsCustomAdapter)tabIndicator.getPagerAdapter()).isShowArrow(index));
+        simplePagerTitleView.setShowArrow(index == 0);
         simplePagerTitleView.setTextSize((float) tabIndicator.getmTextSize());
         simplePagerTitleView.setmNormalColor(tabIndicator.getmTextColor());
         simplePagerTitleView.setmSelectedColor(tabIndicator.getmSelectTextColor());
         simplePagerTitleView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                outSecondTime = (int) System.currentTimeMillis();
+
                 if(currentIndex!=index){//旧的item转到新的item
 
+                    restoreTabState();
                     tabIndicator.getViewPager().setCurrentItem(index);
-                    arrow_direction = ARROW_DOWN;
                     currentIndex = index;
                     if(simplePagerTitleView.isShowArrow()){
-                        simplePagerTitleView.setArrowDirection(arrow_direction);
+                        simplePagerTitleView.setArrowDirection(ARROW_DOWN);
                     }
+
                 }else {//重复点击此item
 
                     if(!simplePagerTitleView.isShowArrow()) return;//如果此item不包括箭头就不用判断后面的操作了
 
-                    if(arrow_direction==ARROW_DOWN){
-                        showPopwindow(simplePagerTitleView,index);
+                    if(hasDismiss&&outSecondTime-outFirstTime<=300&&outSecondTime-outFirstTime!=0){
+                        restoreTabState();
                     }else {
-                        dismissPopWindow();
-                        arrow_direction=ARROW_DOWN;
-                        simplePagerTitleView.setArrowDirection(arrow_direction);
-
+                        if(window!=null&&window.isShowing()) {
+                            dismissPopWindow();
+                        }else {
+                            showPopwindow(simplePagerTitleView,index);
+                        }
                     }
+
 
                 }
             }
+
+
         });
         return simplePagerTitleView;
+    }
+
+    /**
+     * 判断的参数全部还原
+     */
+    private void restoreTabState() {
+        hasDismiss = false;
+        outFirstTime = 0;
+        outSecondTime = 0;
     }
 
     @Override
@@ -90,19 +107,34 @@ public abstract class LcsCustomOnGetIndicatorViewAdapter extends OnGetIndicatorV
     }
 
 
-    public void showPopwindow(LcsCustomTabView view, int index) {
-
-        arrow_direction = ARROW_UP;
-        view.setArrowDirection(arrow_direction);
+    public void showPopwindow(final LcsPageTabView tabView, int index) {
 
         if(context==null) return;
+
+        tabView.setArrowDirection(ARROW_UP);
         View contentView = LayoutInflater.from(context).inflate(R.layout.pop_item, null, false);
-        window = new PopupWindow(contentView, view.getWidth(), 150, true);
+        initView(contentView,tabView,index);
+
+        window = new PopupWindow(contentView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, false);//并不获取焦点，防止拦截其他点击事件
         window.setOutsideTouchable(true);
         window.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-        window.setFocusable(false);//要在显示之前设置，为了防止和点击其他tab冲突，所以选择不获取焦点
-        initView(contentView,view,index);
-        window.showAsDropDown(view, 0, 0);
+        window.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                outFirstTime = (int) System.currentTimeMillis();
+
+                if(clickItem){
+                    clickItem = false;
+                    hasDismiss = false;
+                }else {
+                    hasDismiss = true;
+                }
+                if(tabView.isShowArrow()){
+                    tabView.setArrowDirection(ARROW_DOWN);
+                }
+            }
+        });
+        window.showAsDropDown(tabView, 0, 2);
     }
 
     public void dismissPopWindow() {
@@ -111,39 +143,38 @@ public abstract class LcsCustomOnGetIndicatorViewAdapter extends OnGetIndicatorV
         }
     }
 
-    private void initView(View contentView, final LcsCustomTabView titleView,int index) {
+    private void initView(View contentView, final LcsPageTabView titleView, int index) {
         if(contentView==null||titleView==null) return;
 
-        tv_man = contentView.findViewById(R.id.tv_man);
-        tv_woman = contentView.findViewById(R.id.tv_woman);
-        tv_man.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(window!=null&&window.isShowing()){
-                    window.dismiss();
-                }
-                titleView.setText("男性");
-                if(titleView.isShowArrow()){
-                    arrow_direction = ARROW_DOWN;
-                    titleView.setArrowDirection(arrow_direction);
-                }
-                    childTabSelected("男性");
-            }
-        });
-        tv_woman.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(window!=null&&window.isShowing()){
-                    window.dismiss();
-                }
-                titleView.setText("女性");
-                if(titleView.isShowArrow()){
-                    arrow_direction = ARROW_DOWN;
-                    titleView.setArrowDirection(arrow_direction);
-                }
-                childTabSelected("女性");
-            }
-        });
+        ll = contentView.findViewById(R.id.ll);
+
+        dynamicCreateView(index, "关羽");
+        dynamicCreateView(index, "张飞");
 
     }
+
+
+    /**
+     * 根据tab的个数 动态生成相应个数的view
+     * @param index
+     * @param text
+     */
+    private void dynamicCreateView(final int index, final String text) {
+        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        TextView tv = new TextView(context);
+        tv.setText(text);
+        param.setMargins(20, 20, 0, 0);
+        ll.addView(tv, param);
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clickItem = true;
+                if (window != null && window.isShowing()) {
+                    window.dismiss();
+                }
+                childTabSelected(index, text);
+            }
+        });
+    }
+
 }
